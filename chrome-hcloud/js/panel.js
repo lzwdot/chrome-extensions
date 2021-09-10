@@ -16,7 +16,7 @@ window.addEventListener('keydown', (e) => {
   if (e.keyCode === 13) {
     const matchs = document.getElementsByClassName('match')
     const length = matchs.length
-    if (globalNum >= length) return
+    if (globalNum >= length) globalNum = 0
 
     window.scrollTo(0, matchs[globalNum].offsetTop - 50)
     document.getElementById('number').innerHTML = `${++globalNum}/${length}`
