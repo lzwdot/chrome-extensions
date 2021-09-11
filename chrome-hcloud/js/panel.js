@@ -4,11 +4,7 @@ let globalNum = 0
 
 // 搞个搜索功能
 document.getElementById('search').addEventListener('input', (e) => {
-  const {html: newHtml, number} = textSearch(e.target.value, globalHtml)
-
-  globalNum = 0
-  document.getElementById('app').innerHTML = newHtml
-  document.getElementById('number').innerHTML = number ? `${globalNum}/${number}` : 0
+  doSearch(e.target.value)
 })
 
 // 监听 enter 键
@@ -55,11 +51,27 @@ network.onRequestFinished.addListener(async (...args) => {
 
       // 获取全局 html
       globalHtml = getAppHtml()
+
+      // 自动执行搜索
+      doSearch()
     }
   } catch (err) {
     console.log(err.stack || err.toString())
   }
 })
+
+/**
+ * 执行搜索
+ * @param keyword
+ */
+function doSearch(keyword) {
+  const _keyword = keyword || document.getElementById('search').value
+  const {html: newHtml, number} = textSearch(_keyword, globalHtml)
+
+  globalNum = 0
+  document.getElementById('app').innerHTML = newHtml
+  document.getElementById('number').innerHTML = number ? `${globalNum}/${number}` : 0
+}
 
 /**
  * 用于 html 页面搜索
@@ -68,34 +80,36 @@ network.onRequestFinished.addListener(async (...args) => {
  * @returns {*}
  */
 function textSearch(keyword, html) {
-  //删除注释
+  const _keyword = keyword.trim()
+  // 删除注释
   const _html = html.replace(/<!--(?:.*)\-->/g, "");
 
-  //将HTML代码支离为HTML片段和文字片段，其中文字片段用于正则替换处理，而HTML片段置之不理
+  // 将HTML代码支离为HTML片段和文字片段，其中文字片段用于正则替换处理，而HTML片段置之不理
   const strReg = /[^<>]+|<(\/?)([A-Za-z]+)([^<>]*)>/g;
 
   let newHtml = _html.match(strReg);
   let number = 0
 
   newHtml.forEach(function (item, i) {
+    // 清理之前的匹配
+    newHtml[i] = item.replace('class="match"', '');
+
     if (!/<(?:.|\s)*?>/.test(item)) {//非标签
-      //开始执行替换
-      const keyReg = new RegExp(regTrim(keyword), "g");
-      if (keyword && keyReg.test(item)) {
-        //正则替换
-        newHtml[i] = item.replace(keyReg, '<span class="match">' + keyword + '</span>');
+      // 开始执行替换
+      const keyReg = new RegExp(regTrim(_keyword), "g");
+      if (_keyword && keyReg.test(item)) {
+        // 正则替换
+        newHtml[i] = item.replace(keyReg, '<span class="match">' + _keyword + '</span>');
         number++
-      } else {
-        newHtml[i] = item.replace('class="match"', '');
       }
     }
   });
 
-  //将支离数组重新组成字符串
+  // 将支离数组重新组成字符串
   newHtml = newHtml.join("")
   return {html: newHtml, number}
 
-  //字符串正则表达式关键字转化
+  // 字符串正则表达式关键字转化
   function regTrim(s) {
     var imp = /[\^\.\\\|\(\)\*\+\-\$\[\]\?]/g;
     var imp_c = {};
