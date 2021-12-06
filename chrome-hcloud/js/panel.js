@@ -172,7 +172,7 @@ function getField(data) {
   // 主表单
   let formCode = `// ${title}\n`
   formCode += `const FORM_KEY = '${formSet[0].entityName}__' \n`
-  formCode += 'const formKyes = {\n'
+  formCode += 'const formKeys = {\n'
   for (let i = 0; i < formSet.length; i++) {
     const field = formSet[i]
     if (field.alias) formCode += `   ${field.alias}:` + ' `${FORM_KEY}' + `${field.alias}\` , //${field.title}\n`
@@ -189,7 +189,7 @@ function getField(data) {
 
       tableCode += `// ${tableTitle} \n`
       tableCode += `const tFORM_KEY_${tableSet[0].alias} = '${tableSet[0].entityName}__' \n`
-      tableCode += `const tFormKyes_${tableSet[0].alias} = { \n`
+      tableCode += `const tformKeys_${tableSet[0].alias} = { \n`
       for (let i = 0; i < tableSet.length; i++) {
         const field = tableSet[i]
         if (field.alias) tableCode += `   ${field.alias}:` + ' `${tFORM_KEY_' + `${tableSet[0].alias}` + '}' + `${field.alias}\` , // ${field.title}`
